@@ -20,9 +20,6 @@ public class main {
         database.buscarPiloto("asas");
         database.cerrar();
 
-        database.actualizarPuntos("asas", 8);
-        database.buscarPiloto("asas");
-        database.cerrar();
 
         database.borrarPiloto("Jorge");
         database.listarPiloto();
