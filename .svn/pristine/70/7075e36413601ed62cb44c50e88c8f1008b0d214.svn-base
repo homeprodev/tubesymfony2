@@ -1,0 +1,82 @@
+
+package Modelos;
+
+import com.db4o.Db4oEmbedded;
+import com.db4o.ObjectContainer;
+import com.db4o.ObjectSet;
+
+public class BD {
+
+    private ObjectContainer db;
+
+    public BD() {
+        db = Db4oEmbedded.openFile("pilot");
+    }
+
+    public boolean insertarPilot(Pilot p) {
+        boolean resultado = false;
+        try {
+            db.store(p);
+            resultado = true;
+        } catch (Error e) {
+            return resultado;
+        }
+        return resultado;
+    }
+
+    public void listarPiloto() {
+        Pilot proto = new Pilot(null, 0);
+        ObjectSet result = db.queryByExample(proto);
+        result.stream().forEach((o) -> {
+            System.out.println(o.toString());
+        });
+    }
+
+    public void buscarPiloto(String nombre) {
+        Pilot proto = new Pilot(nombre, 0);
+        ObjectSet result = db.queryByExample(proto);
+        if (result.size() > 0) {
+            result.stream().forEach((o) -> {
+                System.out.println(o.toString());
+            });
+        } else {
+            System.out.println("No existe");
+        }
+
+    }
+
+    public void actualizarPuntos(String nombre, int puntos) {
+        Pilot proto = new Pilot(nombre, 0);
+        ObjectSet result = db.queryByExample(proto);
+        Pilot mod = null;
+        if (result.hasNext()) {
+            mod = (Pilot) result.next();
+        }
+        if (mod != null) {
+            mod.afegirPunts(puntos);
+            db.store(proto);
+            System.out.println("Se ha actualizado");
+        } else {
+            System.out.println("No se ha actualizado");
+        }
+    }
+
+    public void borrarPiloto(String nombre) {
+        
+        Pilot proto = new Pilot(nombre, 0);
+        ObjectSet result = db.queryByExample(proto);        
+        if (result.hasNext()) {
+            Pilot a = (Pilot) result.next();
+            db.delete(a);
+            System.out.println("Borrado ok");
+        }
+        else {
+            System.out.println("Borrado nok");
+        }
+    }
+
+    public void cerrar() {
+        db.commit();
+        db.close();
+    }
+}
